@@ -21,17 +21,45 @@ class Config(commands.Cog):
         pass
     
     @get.command(name='prefix')
-    async def get_prefix(self, ctx):
-        await ctx.send('The current prefix for this guild ist `{0}`'.format(config.base.get_prefix(ctx.message.guild.id)))
+    async def get_prefix(self, ctx, *, arguments = None):
+        if self.__is_global_call(arguments):
+            if self.__has_global_permissions(ctx.message.author):
+                await ctx.send('The current global prefix for this bot is `{0}`'.format(config.base.get_prefix(None)))
+                return 
+
+        await ctx.send('The current prefix for this guild is `{0}`'.format(config.base.get_prefix(ctx.message.guild.id)))
 
     @set.command(name='prefix')
-    async def set_prefix(self, ctx, *, prefix):
+    async def set_prefix(self, ctx, prefix, *, arguments = None):
+        set_global = False
+        if self.__is_global_call(arguments):
+            if self.__has_global_permissions(ctx.message.author):
+                set_global = True
+            else:
+                await ctx.send('Invalid command call')
+                return
+            
         prefix = prefix.strip('"`\'')
         if match(r"^[a-z]{0,3}[.-~!?]{0,2} ?$", prefix) and prefix != ' ' and prefix != '':
-            config.base.set_prefix(ctx.message.guild.id, prefix)
-            await ctx.send('Set prefix for this guild to `{0}`'.format(prefix))
+            if set_global:
+                config.base.set_prefix(None, prefix)
+                await ctx.send('Set prefix for this bot to `{0}`'.format(prefix))
+            else:
+                config.base.set_prefix(ctx.message.guild.id, prefix)
+                await ctx.send('Set prefix for this guild to `{0}`'.format(prefix))
         else:
             await ctx.send('Invalid prefix provided. Prefix must match the pattern `^[a-z]{0,3}[.-~!?]{0,2} ?$` and must not be a single blank or empty.')
+
+    def __is_global_call(self, arguments):
+        if arguments == None:
+            return False
+        arg_list = arguments.split(" ")
+        if "--global" in arg_list:
+            return True
+        return False
+
+    def __has_global_permissions(self, author):
+        return self.bot.extensions["ext.botinfo"].info.is_owner(author.id)
 
 def setup(bot):
     bot.add_cog(Config(bot))
