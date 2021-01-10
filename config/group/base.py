@@ -15,7 +15,7 @@ class Base(ConfigGroup):
         
         prefix = self.read(guild, 'base_prefix')
         if prefix == None:
-            return config.prefix
+            return self.read(None, 'base_prefix')
         
         self.prefix[guild] = prefix
 

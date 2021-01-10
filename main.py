@@ -8,7 +8,7 @@ intents = discord.Intents.default()
 bot = commands.Bot(command_prefix=lambda bot, message : config.base.get_prefix(message.guild.id), description=description, case_insensitive=True, intents=intents)
 
 startup_extensions = [
-    "commands.settings",
+    "commands.config",
 ]
 
 @bot.event

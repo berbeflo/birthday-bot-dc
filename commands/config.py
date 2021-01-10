@@ -7,6 +7,7 @@ class Config(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.has_permissions(administrator=True)
     @commands.group(pass_context=True, invoke_without_command=False)
     async def config(self, ctx):
         pass
