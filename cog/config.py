@@ -40,7 +40,8 @@ class Config(commands.Cog):
                 return
             
         prefix = prefix.strip('"`\'')
-        if match(r"^[a-z]{0,3}[.-~!?]{0,2} ?$", prefix) and prefix != ' ' and prefix != '':
+        print(prefix)
+        if match(r"^([a-z]{0,3}[-.~!?]{0,2}|[a-z]{1,3} ?)$", prefix):
             if set_global:
                 config.base.set_prefix(None, prefix)
                 await ctx.send('Set prefix for this bot to `{0}`'.format(prefix))
@@ -48,7 +49,7 @@ class Config(commands.Cog):
                 config.base.set_prefix(ctx.message.guild.id, prefix)
                 await ctx.send('Set prefix for this guild to `{0}`'.format(prefix))
         else:
-            await ctx.send('Invalid prefix provided. Prefix must match the pattern `^[a-z]{0,3}[.-~!?]{0,2} ?$` and must not be a single blank or empty.')
+            await ctx.send('Invalid prefix provided. Prefix must match the pattern `^([a-z]{0,3}[-.~!?]{0,2}|[a-z]{1,3} ?)$`.')
 
     def __is_global_call(self, arguments):
         if arguments == None:
