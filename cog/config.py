@@ -1,4 +1,5 @@
 import discord
+import typing
 from discord.ext import commands
 from config.config import config
 from re import match
@@ -50,6 +51,19 @@ class Config(commands.Cog):
                 await ctx.send('Set prefix for this guild to `{0}`'.format(prefix))
         else:
             await ctx.send('Invalid prefix provided. Prefix must match the pattern `^([a-z]{0,3}[-.~!?]{0,2}|[a-z]{1,3} ?)$`.')
+
+    @set.command(name='bdchannel')
+    async def set_bd_channel(self, ctx, channel: typing.Optional[discord.TextChannel] = None):
+        if channel != None:
+            if ctx.me.permissions_in(channel).send_messages != True:
+                await ctx.send('The bot has not the required permissions for {0}'.format(channel.mention))
+                return
+
+            config.birthday.set_channel(ctx.message.guild.id, channel.id)
+            await ctx.send("Set {0} as birthday channel".format(channel.mention))
+        else:
+            config.birthday.set_channel(ctx.message.guild.id, None)
+            await ctx.send("The bot does not send any birthday wishes.")
 
     def __is_global_call(self, arguments):
         if arguments == None:

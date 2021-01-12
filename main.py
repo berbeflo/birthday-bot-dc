@@ -10,6 +10,8 @@ bot = commands.Bot(command_prefix=lambda bot, message : config.base.get_prefix(m
 startup_extensions = [
     "cog.config",
     "ext.botinfo",
+    "cog.admin",
+    "cog.birthday",
 ]
 
 @bot.event
