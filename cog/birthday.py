@@ -63,6 +63,43 @@ class Birthday(commands.Cog):
             await ctx.send('{0} has birthday at {1}'.format(user.name, birthday.get_birthday()))
         else:
             await ctx.send('{0} has birthday at {1} and is currently {2} years old'.format(user.name, birthday.get_birthday(), birthday.get_age()))
+
+    @commands.command()
+    async def who(self, ctx, date):
+        match = search(r"^(?P<month>\d{2})-(?P<day>\d{2})$", date)
+        if match == None:
+            match = search(r"^(?P<day>\d{2})\.(?P<month>\d{2})\.$", date)
+        if match == None:
+            await ctx.send('The date does not match the awaited syntax')
+            return
+        match_dict = match.groupdict()
+
+        day = int(match_dict["day"])
+        month = int(match_dict["month"])
+
+        users = self.storage.find(ctx.message.guild.id, month, day)
+        members = []
+        print(users)
+        for user in users:
+            try:
+                member = await ctx.message.guild.fetch_member(user)
+                members.append(member)
+            except:
+                pass
+
+        if len(members) == 0:
+            await ctx.send('There are no users that have birthday on {0}'.format(date))
+            return
+
+        member_string = ""
+        first = True
+        for member in members:
+            if first == False:
+                member_string = member_string + ", "
+            first = False
+            member_string = member_string + member.display_name + " (" + member.name + "#" + member.discriminator + ")"
+
+        await ctx.send('The following users have birthday on {0}: {1}'.format(date, member_string))
         
     @commands.command()
     async def hide_age(self, ctx):

@@ -3,8 +3,18 @@ import os
 from bday.bday import BDay
 
 class StorageJson():
-    def find(self, guild_id, user_id):
-        pass
+    def find(self, guild_id, month, day):
+        user_list = []
+        if os.path.isfile(self._build_filename(guild_id)):
+            with open(self._build_filename(guild_id), 'r', encoding='utf8') as readfile:
+                data = json.load(readfile)
+                
+                for bday_data in data.values():
+                    if bday_data["month"] == month and bday_data["day"] == day:
+                        user_list.append(bday_data["user"])
+                return user_list
+                
+        return user_list
 
     def read(self, guild_id, user_id):
         key = str(user_id)
