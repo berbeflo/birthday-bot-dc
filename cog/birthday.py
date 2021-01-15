@@ -3,10 +3,16 @@ from discord.ext import commands
 from config.config import config
 from re import search
 from datetime import datetime
+from bday.engine.storage_json import StorageJson
+from bday.bday import BDay
+import typing
 
 class Birthday(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.storage = None
+        if config.birthday.get_engine() == "json":
+            self.storage = StorageJson()
 
     @commands.command()
     async def set(self, ctx, date):
@@ -36,7 +42,56 @@ class Birthday(commands.Cog):
             await ctx.send('The given date is not valid')
             return
         
-        print(match.groupdict())
+        birthday = BDay(ctx.message.guild.id, ctx.message.author.id, match_dict["day"], match_dict["month"], match_dict["year"])
+        self.storage.write(birthday)
+
+        await ctx.send('Your birthday was stored')
+        await ctx.message.delete()
+
+    @commands.command()
+    async def when(self, ctx, user: typing.Optional[discord.User] = None):
+        if user == None:
+            user = ctx.message.author
+        user_id = user.id
+
+        birthday = self.storage.read(ctx.message.guild.id, user_id)
+        if birthday == None:
+            await ctx.send('The user did not tell me his birthday.')
+            return
+
+        if birthday.is_year_hidden() or birthday.get_year() == None:
+            await ctx.send('{0} has birthday at {1}'.format(user.name, birthday.get_birthday()))
+        else:
+            await ctx.send('{0} has birthday at {1} and is currently {2} years old'.format(user.name, birthday.get_birthday(), birthday.get_age()))
+        
+    @commands.command()
+    async def hide_age(self, ctx):
+        birthday = self.storage.read(ctx.message.guild.id, ctx.message.author.id)
+        if birthday == None:
+            await ctx.send('You did not tell me your birthday yet.')
+            return
+
+        birthday.hide_year()
+
+        self.storage.write(birthday)
+
+        await ctx.send('Your age will now be hidden.')
+
+    @commands.command()
+    async def show_age(self, ctx):
+        birthday = self.storage.read(ctx.message.guild.id, ctx.message.author.id)
+        if birthday == None:
+            await ctx.send('You did not tell me your birthday yet.')
+            return
+
+        birthday.show_year()
+
+        self.storage.write(birthday)
+
+        if birthday.get_year() == None:
+            await ctx.send('This had no effect, as you did not provide your year of birth.')
+        else:
+            await ctx.send('Your age will now be shown.')
 
 def setup(bot):
     bot.add_cog(Birthday(bot))

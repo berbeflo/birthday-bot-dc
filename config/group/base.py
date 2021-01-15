@@ -1,5 +1,5 @@
 from config.configgroup import ConfigGroup
-import config.store.config as config
+import config.storage.config as config
 
 class Base(ConfigGroup):
     def __init__(self):

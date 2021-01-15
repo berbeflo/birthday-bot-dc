@@ -25,7 +25,7 @@ class ConfigGroup:
             json.dump(data, outfile, indent=True)
 
     def _build_filename(self, guild):
-        path = "config/store/{0}config.json"
+        path = "config/storage/{0}config.json"
         
         if guild == None:
             return path.format("")
