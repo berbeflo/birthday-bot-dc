@@ -4,6 +4,7 @@ from config.config import config
 from re import search
 from datetime import datetime
 from bday.engine.storage_json import StorageJson
+from bday.engine.storage_sqlite import StorageSqLite
 from bday.bday import BDay
 import typing
 
@@ -13,6 +14,8 @@ class Birthday(commands.Cog):
         self.storage = None
         if config.birthday.get_engine() == "json":
             self.storage = StorageJson()
+        if config.birthday.get_engine() == "sqlite":
+            self.storage = StorageSqLite()
 
     @commands.command()
     async def set(self, ctx, date):
@@ -79,7 +82,7 @@ class Birthday(commands.Cog):
 
         users = self.storage.find(ctx.message.guild.id, month, day)
         members = []
-        print(users)
+        
         for user in users:
             try:
                 member = await ctx.message.guild.fetch_member(user)
