@@ -11,7 +11,7 @@ class Birthday(ConfigGroup):
         
         channel = self.read(guild, 'birthday_channel')
         
-        self.prefix[guild] = channel
+        self.channel[guild] = channel
 
         return channel
 

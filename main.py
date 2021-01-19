@@ -12,6 +12,7 @@ startup_extensions = [
     "ext.botinfo",
     "cog.admin",
     "cog.birthday",
+    "ext.bdcron",
 ]
 
 @bot.event

@@ -39,13 +39,13 @@ class BDay:
         return self._format(self.month) + '-' + self._format(self.day)
 
     def get_display_date(self):
-        if self.year == None or self.hide_year == True:
+        if self.year == None or self.year_hidden == True:
             return self._format(self.month) + '-' + self._format(self.day)
             
         return str(self.year) + '-' + self._format(self.month) + '-' + self._format(self.day)
 
     def get_age(self):
-        if self.year == None or self.hide_year == True:
+        if self.year == None or self.year_hidden == True:
             return None
 
         current_year = datetime.now().year
