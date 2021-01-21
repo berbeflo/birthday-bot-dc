@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 class CronJson():
     def read(self, key):
@@ -18,6 +19,7 @@ class CronJson():
             data = {}
 
         data[key] = value
+        data['updated'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         with open(self._build_filename(), 'w+', encoding='utf8') as outfile:
             json.dump(data, outfile, indent=True)

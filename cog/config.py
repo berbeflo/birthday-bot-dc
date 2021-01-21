@@ -41,7 +41,6 @@ class Config(commands.Cog):
                 return
             
         prefix = prefix.strip('"`\'')
-        print(prefix)
         if match(r"^([a-z]{0,3}[-.~!?]{0,2}|[a-z]{1,3} ?)$", prefix):
             if set_global:
                 config.base.set_prefix(None, prefix)

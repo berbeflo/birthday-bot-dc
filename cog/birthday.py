@@ -3,19 +3,14 @@ from discord.ext import commands
 from config.config import config
 from re import search
 from datetime import datetime
-from bday.engine.storage_json import StorageJson
-from bday.engine.storage_sqlite import StorageSqLite
+from bday.engine.engine import engine
 from bday.bday import BDay
 import typing
 
 class Birthday(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.storage = None
-        if config.birthday.get_engine() == "json":
-            self.storage = StorageJson()
-        if config.birthday.get_engine() == "sqlite":
-            self.storage = StorageSqLite()
+        self.engine = engine
 
     @commands.command()
     async def set(self, ctx, date):
@@ -46,7 +41,7 @@ class Birthday(commands.Cog):
             return
         
         birthday = BDay(ctx.message.guild.id, ctx.message.author.id, match_dict["day"], match_dict["month"], match_dict["year"])
-        self.storage.write(birthday)
+        self.engine.storage().write(birthday)
 
         await ctx.send('Your birthday was stored')
         await ctx.message.delete()
@@ -57,7 +52,7 @@ class Birthday(commands.Cog):
             user = ctx.message.author
         user_id = user.id
 
-        birthday = self.storage.read(ctx.message.guild.id, user_id)
+        birthday = self.engine.storage().read(ctx.message.guild.id, user_id)
         if birthday == None:
             await ctx.send('The user did not tell me his birthday.')
             return
@@ -80,7 +75,7 @@ class Birthday(commands.Cog):
         day = int(match_dict["day"])
         month = int(match_dict["month"])
 
-        users = self.storage.find(ctx.message.guild.id, month, day)
+        users = self.engine.storage().find(ctx.message.guild.id, month, day)
         members = []
         
         for user in users:
@@ -106,27 +101,27 @@ class Birthday(commands.Cog):
         
     @commands.command()
     async def hide_age(self, ctx):
-        birthday = self.storage.read(ctx.message.guild.id, ctx.message.author.id)
+        birthday = self.engine.storage().read(ctx.message.guild.id, ctx.message.author.id)
         if birthday == None:
             await ctx.send('You did not tell me your birthday yet.')
             return
 
         birthday.hide_year()
 
-        self.storage.write(birthday)
+        self.engine.storage().write(birthday)
 
         await ctx.send('Your age will now be hidden.')
 
     @commands.command()
     async def show_age(self, ctx):
-        birthday = self.storage.read(ctx.message.guild.id, ctx.message.author.id)
+        birthday = self.engine.storage().read(ctx.message.guild.id, ctx.message.author.id)
         if birthday == None:
             await ctx.send('You did not tell me your birthday yet.')
             return
 
         birthday.show_year()
 
-        self.storage.write(birthday)
+        self.engine.storage().write(birthday)
 
         if birthday.get_year() == None:
             await ctx.send('This had no effect, as you did not provide your year of birth.')

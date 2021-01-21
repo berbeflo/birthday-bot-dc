@@ -68,8 +68,8 @@ class StorageSqLite:
         ''', (guild_id, user_id))
         result = cursor.fetchone()
         if result == None:
-            return
-        print(result)
+            return None
+        
         bday = BDay(result["guild"], result["user"], result["day"], result["month"], result["year"])
         if result["hide_year"] == 1:
             bday.hide_year()
