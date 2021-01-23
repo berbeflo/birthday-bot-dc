@@ -32,6 +32,12 @@ class BDay:
     def is_year_hidden(self):
         return self.year_hidden
 
+    def has_birthday(self):
+        current_month = datetime.now().month
+        current_day = datetime.now().day
+
+        return current_month == self.month and current_day == self.day
+
     def get_year(self):
         return self.year
 
@@ -44,8 +50,10 @@ class BDay:
             
         return str(self.year) + '-' + self._format(self.month) + '-' + self._format(self.day)
 
-    def get_age(self):
-        if self.year == None or self.year_hidden == True:
+    def get_age(self, show_hidden = False):
+        if self.year == None:
+            return None
+        if show_hidden == False and self.year_hidden == True:
             return None
 
         current_year = datetime.now().year

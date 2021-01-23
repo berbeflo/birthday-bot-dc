@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from config.config import config
 from re import match
+import typing
 
 class Admin(commands.Cog):
     def __init__(self, bot):

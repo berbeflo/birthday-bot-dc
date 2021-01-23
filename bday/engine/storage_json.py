@@ -16,6 +16,18 @@ class StorageJson():
                 
         return user_list
 
+    def all(self, guild_id):
+        user_list = []
+        if os.path.isfile(self._build_filename(guild_id)):
+            with open(self._build_filename(guild_id), 'r', encoding='utf8') as readfile:
+                data = json.load(readfile)
+                
+                for bday_data in data.values():
+                    user_list.append(bday_data["user"])
+                return user_list
+                
+        return user_list
+
     def read(self, guild_id, user_id):
         key = str(user_id)
         if os.path.isfile(self._build_filename(guild_id)):

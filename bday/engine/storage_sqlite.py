@@ -89,3 +89,17 @@ class StorageSqLite:
             users.append(row["user"])
 
         return users
+
+    def all(self, guild_id):
+        users = []
+        cursor = self.connection.cursor()
+        cursor.execute('''
+            select user from birthdays
+                where guild = ?
+        ''', (guild_id, ))
+
+        result = cursor.fetchall()
+        for row in result:
+            users.append(row["user"])
+
+        return users
